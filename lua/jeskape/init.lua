@@ -86,7 +86,7 @@ local function create_mappings()
             "i",
             key,
             ([[luaeval('require("jeskape").key_pressed("%s")')]]):format(key),
-            { expr = true, silent = true }
+            { expr = true, silent = true, noremap = true }
         )
     end
 end
