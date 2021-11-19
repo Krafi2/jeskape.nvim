@@ -1,13 +1,8 @@
 # Jeskape
 
 Have you ever wanted to map keys in insert mode, but found that it causes the
-mapped keys to lag? The reason for this is that neovim waits until it is sure
-that you arent typing a mapped combination before inserting characters.
-
-For example, some people like to map `jk` to `<esc>`, which, when using `imap`,
-will cause `j` to not be typed until `timeoutlen` runs out, or another key is
-pressed. Thankfully jeskape is here to save the day and get rid of that pesky
-lag!
+mapped keys to lag? This plugin solves the issue by implementing its own mapping
+system!
 
 ## Installation
 
@@ -25,7 +20,7 @@ use {
 
 ## Configuration
 
-Configure the plugin using the `setup` function.
+You can configure the plugin using the `setup` function.
 
 ```lua
 require("jeskape").setup {
@@ -46,8 +41,8 @@ require("jeskape").setup {
             -- neovim
             f = function()
                 print("Oh look, a function!")
-                -- Insert the name of the current buffer
-                return vim.api.nvim_buf_get_name(0)
+                -- Insert the name of the current file
+                return vim.fn.expand "%:t"
             end,
         },
     },
@@ -59,7 +54,7 @@ require("jeskape").setup {
 
 ## Alternatives
 
-You can also try some of these plugins if all you need is escaping insert mode.
+You can also try one of these plugins if all you need is escaping insert mode.
 
 - https://github.com/max397574/better-escape.nvim
 - https://github.com/jdhao/better-escape.vim
