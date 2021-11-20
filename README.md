@@ -1,8 +1,9 @@
 # Jeskape
 
 Have you ever wanted to map keys in insert mode, but found that it causes the
-mapped keys to lag? This plugin solves the issue by implementing its own mapping
-system!
+mapped keys to lag? This happens because neovim waits until it is sure that you
+aren't typing a mapped combination before inserting characters. Jeskape works
+around the issue by implementing its own mapping system for insert mode.
 
 ## Installation
 
