@@ -17,14 +17,16 @@ local M = {}
 local function reset_state()
     mod.state = config.settings().mappings
     mod.keys = 0
-    mod.last = vim.fn.reltime()
 end
 
 --- @return string
 -- Finish the text returned by a mapping
 local function finish_mapping(output)
-    -- Remove the characters that we've written
-    return string.rep("<C-h>", mod.keys) .. output
+    -- Remove the characters that we've written. We have to subtract 1,
+    -- because the last key is a mapping and wont produce a character.
+    local out = string.rep("<C-h>", mod.keys - 1) .. output
+    reset_state()
+    return out
 end
 
 -- This function runs on every keypress registered in a mapping.
@@ -36,14 +38,13 @@ local function _key_pressed(key)
     local delta = vim.fn.reltimefloat(vim.fn.reltime(mod.last, now)) * 1000
     local timeout = config.settings().timeout
 
-    mod.last = now
-    mod.keys = mod.keys + 1
-
     -- Start a new key chain
     if delta > timeout then
         reset_state()
     end
 
+    mod.last = now
+    mod.keys = mod.keys + 1
     local state = mod.state[key]
     local type = type(state)
 
@@ -67,7 +68,7 @@ local function _key_pressed(key)
         end
 
         res = ok and res or ""
-        return finish_mapping(state())
+        return finish_mapping(res)
     end
 end
 
