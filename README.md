@@ -46,10 +46,8 @@ require("jeskape").setup {
                 return vim.fn.expand "%:t"
             end,
         },
-        -- Special characters
-        [";"] = {
-            [";"] = "<esc>A;<enter>",
-        },
+        -- You can use lua's arbitrary key notation to map special characters
+        [";;"] = "<esc>A;<cr>",
     },
     -- The maximum length of time between keystrokes where they are still considered a part of
     -- the same mapping.
