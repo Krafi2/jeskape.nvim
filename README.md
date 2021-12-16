@@ -46,6 +46,10 @@ require("jeskape").setup {
                 return vim.fn.expand "%:t"
             end,
         },
+        -- Special characters
+        [";"] = {
+            [";"] = "<esc>A;<enter>",
+        },
     },
     -- The maximum length of time between keystrokes where they are still considered a part of
     -- the same mapping.
