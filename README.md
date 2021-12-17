@@ -48,6 +48,8 @@ require("jeskape").setup {
                 return vim.fn.expand "%:t"
             end,
         },
+        -- You can use lua's arbitrary key notation to map special characters
+        [";;"] = "<esc>A;<cr>",
         -- Use `<cmd>` to map commands. Be carful to terminate the command with `<cr>`.
         ff = "<cmd>echo 'commands work too'<cr>",
     },
