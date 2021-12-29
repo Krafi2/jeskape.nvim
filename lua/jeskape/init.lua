@@ -33,8 +33,8 @@ end
 -- @param key string
 -- @param recurse bool
 -- Try to resolve a key into a mapping, returning the string to be inserted. If
--- the `recurse` is specified, tries to recursively match the key if no mapping
--- could be found.
+-- the `recurse` option is specified and no mapping could be found, try to
+-- recursively match the key.
 local function resolve_key(key, recurse)
     mod.keys = mod.keys + 1
     local state = mod.state[key]
@@ -47,12 +47,12 @@ local function resolve_key(key, recurse)
         if recurse then
             return resolve_key(key)
         else -- Don't recurse to avoid infinite recursion
-            return key
+            return nil
         end
         -- There are more branches
     elseif type == "table" then
         mod.state = state
-        return key
+        return nil
         -- The combination maps to a string
     elseif type == "string" then
         return finish_mapping(state)
@@ -71,9 +71,11 @@ local function resolve_key(key, recurse)
     end
 end
 
--- This function runs on every keypress registered in a mapping. This is where
--- most of the plugin's logic is.
-function M.key_pressed(key)
+-- This function runs on every keypress and is responsible for hadling
+-- mappings.
+function M.key_pressed()
+    local key = vim.v.char
+
     mod.last = mod.last or vim.fn.reltime()
     local now = vim.fn.reltime()
     -- reltime is in seconds but we need miliseconds
@@ -88,21 +90,22 @@ function M.key_pressed(key)
     mod.last = now
 
     local keys = resolve_key(key, true)
-    keys = vim.api.nvim_replace_termcodes(keys, true, true, true)
-    return keys
+    -- If `resolve_key` returns nil, we leave v:char alone and let the key be
+    -- inserted as is
+    if keys then
+        vim.v.char = ""
+        keys = vim.api.nvim_replace_termcodes(keys, true, true, true)
+        -- We can't use v:char because
+        vim.api.nvim_feedkeys(keys, "n", true)
+    end
 end
 
 -- Create mappings for configured bindings
 local function create_mappings()
-    local mappings = config.settings().mappings
-    for key, _ in pairs(utils.all_keys(mappings)) do
-        vim.api.nvim_set_keymap(
-            "i",
-            key,
-            ([[luaeval('require("jeskape").key_pressed("%s")')]]):format(key),
-            { expr = true, silent = true, noremap = true }
-        )
-    end
+    vim.cmd [[augroup Jeskape
+    autocmd!
+    autocmd InsertCharPre * lua require("jeskape").key_pressed()
+    augroup END]]
 end
 
 function M.setup(settings)
